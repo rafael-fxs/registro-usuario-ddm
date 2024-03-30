@@ -28,9 +28,9 @@ class ChangeUserActivity : AppCompatActivity() {
             insets
         }
 
-        inputNewUsername = findViewById(R.id.editTextNewUsername);
-        inputNewPassword = findViewById(R.id.editTextNewPassword);
-        buttonChange = findViewById(R.id.buttonChange);
+        inputNewUsername = findViewById(R.id.editTextRegisterUsername);
+        inputNewPassword = findViewById(R.id.editTextRegisterPassword);
+        buttonChange = findViewById(R.id.buttonCreate);
         buttonChange.setEnabled(false);
         inputNewUsername.addTextChangedListener(textWatcher);
         inputNewPassword.addTextChangedListener(textWatcher);
@@ -49,7 +49,7 @@ class ChangeUserActivity : AppCompatActivity() {
 
     private fun changeUser() {
         Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show()
-        user = User(inputNewUsername.text.trim().toString(), inputNewPassword.text.trim().toString())
+        user = User(inputNewUsername.text.trim().toString().lowercase(), inputNewPassword.text.trim().toString(), "")
         val intent = Intent()
         intent.putExtra("user", user.toJson())
         setResult(RESULT_OK,intent)

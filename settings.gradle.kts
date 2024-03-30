@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Troca Senha Login"
+rootProject.name = "Registro Usuario"
 include(":app")
  

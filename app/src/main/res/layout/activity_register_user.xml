@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ChangeUserActivity">
+    tools:context=".RegisterUserActivity">
 
 
     <Space
@@ -33,8 +33,10 @@
                 android:layout_width="323dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/new_username"
+                android:hint="@string/username"
                 android:inputType="text"
+                android:minHeight="48dp"
+                android:textColorHint="#546E7A"
                 android:importantForAutofill="no" />
 
             <EditText
@@ -42,15 +44,34 @@
                 android:layout_width="322dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/new_password"
+                android:hint="@string/password"
                 android:inputType="textPassword"
+                android:minHeight="48dp"
+                android:textColorHint="#546E7A"
                 android:importantForAutofill="no" />
+
+            <EditText
+                android:id="@+id/editTextRegisterRepeatPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/repeat_password"
+                android:importantForAutofill="no"
+                android:inputType="textPassword"
+                android:minHeight="48dp"
+                android:textColorHint="#546E7A" />
+
+            <Spinner
+                android:id="@+id/spinnerTypeUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp" />
 
             <Button
                 android:id="@+id/buttonCreate"
                 android:layout_width="318dp"
                 android:layout_height="wrap_content"
-                android:text="@string/change" />
+                android:text="@string/create" />
         </LinearLayout>
 
         <Space

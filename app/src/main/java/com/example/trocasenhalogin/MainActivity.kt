@@ -1,6 +1,7 @@
 package com.example.trocasenhalogin
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -15,17 +16,32 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.gson.Gson
 import java.io.Serializable
+import java.util.logging.Logger
 
 class MainActivity : AppCompatActivity() {
     private lateinit var inputUsername: EditText
     private lateinit var inputPassword: EditText
     private lateinit var buttonSignIn: Button
-    private var user: User = User("user", "1234");
+    private lateinit var buttonRegisterUser: Button
+    private var userList: MutableList<User> = mutableListOf(User("user", "1234", "Adm"))
+    private val itensSpinner = arrayListOf("User","Adm","Mkt")
+    private var userAunteticated: User? = null;
 
-    val resultLaucher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ it ->
+    private val changeUserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ it ->
         if(it.resultCode == RESULT_OK){
             val json = it.data?.getStringExtra("user")
-            user = json?.let { User.fromJson(it) }!!
+            val newUser = json?.let { User.fromJson(it) }!!
+            userAunteticated!!.username = newUser.username;
+            userAunteticated!!.password = newUser.password;
+        }
+    }
+
+    private val registerUserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ it ->
+        if(it.resultCode == RESULT_OK){
+            val json = it.data?.getStringExtra("user")
+            val newUser = json?.let { User.fromJson(it) }!!
+            userList.add(newUser)
+            saveContentToFile(this, Gson().toJson(userList),"userList.txt")
         }
     }
 
@@ -43,9 +59,11 @@ class MainActivity : AppCompatActivity() {
         inputPassword = findViewById(R.id.editTextPassword);
         buttonSignIn = findViewById(R.id.buttonSignIn);
         buttonSignIn.setEnabled(false);
+        buttonRegisterUser = findViewById(R.id.buttonRegister)
         inputUsername.addTextChangedListener(textWatcher);
         inputPassword.addTextChangedListener(textWatcher);
         buttonSignIn.setOnClickListener{signIn()}
+        buttonRegisterUser.setOnClickListener{registerUser()}
     }
 
     private val textWatcher = object : TextWatcher {
@@ -59,13 +77,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
+        userAunteticated = null;
         val login = inputUsername.text.trim().toString()
         val password = inputPassword.text.trim().toString()
-        if (user.authenticate(login, password)) {
+        val userFind = userList.find { it.username == login && it.password == password }
+        if (userFind != null) {
+            userAunteticated = userFind;
             Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show()
             cleanFields()
             val intent = Intent(this,ChangeUserActivity::class.java)
-            resultLaucher.launch(intent)
+            changeUserLauncher.launch(intent)
             return
         }
 
@@ -80,24 +101,22 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun registerUser() {
+        val intent = Intent(this,RegisterUserActivity::class.java)
+        intent.putStringArrayListExtra("itensSpinner", itensSpinner)
+        intent.putExtra("userList", Gson().toJson(userList))
+        registerUserLauncher.launch(intent)
+        return
+    }
+
     private fun cleanFields() {
         inputUsername.setText("");
         inputPassword.setText("");
     }
-}
 
-class User(private val username: String, private val password: String) : Serializable {
-    fun authenticate(inputUsername: String, inputPassword: String): Boolean {
-        return inputUsername == username && inputPassword == password
-    }
-    fun toJson(): String {
-        return Gson().toJson(this)
-    }
-
-    companion object {
-        fun fromJson(json: String): User {
-            return Gson().fromJson(json, User::class.java)
+    private fun saveContentToFile(context: Context, content: String, filename: String){
+        context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+            it.write(content.toByteArray())
         }
     }
 }
-
